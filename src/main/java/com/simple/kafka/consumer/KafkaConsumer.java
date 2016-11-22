@@ -2,6 +2,7 @@ package com.simple.kafka.consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +33,8 @@ public class KafkaConsumer<K, V> {
         //props.put("auto.offset.reset", "earliest");
         properties.put("bootstrap.servers", "localhost:9092");
         //props.put("group.id", groupId);
-        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put("key.serializer", StringDeserializer.class.toString());
+        properties.put("value.serializer", StringDeserializer.class.toString());
     }
 
 

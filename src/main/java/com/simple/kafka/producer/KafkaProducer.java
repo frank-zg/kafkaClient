@@ -2,6 +2,7 @@ package com.simple.kafka.producer;
 
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +27,8 @@ public class KafkaProducer<K, V> {
     private void initProperties() {
         properties.put("bootstrap.servers", "localhost:9092");
         properties.put("client.id", "testClient");
-        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put("key.serializer", StringSerializer.class.toString());
+        properties.put("value.serializer", StringSerializer.class.toString());
         properties.put("acks", "1");
         properties.put("retries", "0");
         properties.put("linger.ms", "500");
