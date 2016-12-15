@@ -2,7 +2,6 @@ package com.simple.kafka.consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,9 +13,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by frank on 2016/11/3.
+ * Created by zg on 2016/11/3.
  *
- * @apiNote Simple KafkaConsumer
+ * @apiNote longsheng KafkaConsumer
  * @apiNote kafka-client-0.10.0.1
  */
 public class KafkaConsumer<K, V> {
@@ -33,8 +32,8 @@ public class KafkaConsumer<K, V> {
         //props.put("auto.offset.reset", "earliest");
         properties.put("bootstrap.servers", "localhost:9092");
         //props.put("group.id", groupId);
-        properties.put("key.serializer", StringDeserializer.class.toString());
-        properties.put("value.serializer", StringDeserializer.class.toString());
+        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
     }
 
 
@@ -52,13 +51,45 @@ public class KafkaConsumer<K, V> {
     public KafkaConsumer(Properties props) {
         initProperties();
         if (props == null) {
-            props = this.properties;
+            this.properties = props;
         }
+
+    }
+
+    /**
+     * init kafkaconsumer
+     */
+    public KafkaConsumer() {
+        initProperties();
+    }
+
+
+    /**
+     * @param servers eg: host:port,host:port
+     * @return
+     */
+    public KafkaConsumer setServers(String servers) {
+        this.properties.put("bootstrap.servers", servers);
+        return this;
+    }
+
+
+    public KafkaConsumer setGroupId(String groupId) {
+        this.properties.put("group.id", groupId);
+        return this;
+    }
+
+
+    /**
+     * @return build kafkaConsumer
+     */
+    public KafkaConsumer build() {
         try {
-            this.consumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(props);
+            this.consumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(this.properties);
         } catch (Exception e) {
             logger.error("KafkaConsumer init error:{}", e);
         }
+        return this;
     }
 
 
@@ -68,11 +99,11 @@ public class KafkaConsumer<K, V> {
      * @param topics
      * @param msgPool 接收函数
      */
-    public void consumer(List<String> topics, ConsumerMsgPool msgPool) {
+    public void consumer(List<String> topics, ConsumerMsgInterface msgPool) {
         try {
-            consumer.subscribe(topics);
+            this.consumer.subscribe(topics);
             while (true) {
-                ConsumerRecords<K, V> records = consumer.poll(1000);
+                ConsumerRecords<K, V> records = this.consumer.poll(1000);
                 for (ConsumerRecord<K, V> record : records) {
                     msgPool.receiveMsg(record.value().toString());
                 }
@@ -80,7 +111,7 @@ public class KafkaConsumer<K, V> {
         } catch (Exception e) {
             logger.error("KafkaConsumer consumering error:{}", e);
         } finally {
-            consumer.close();
+            this.consumer.close();
         }
     }
 
@@ -91,14 +122,14 @@ public class KafkaConsumer<K, V> {
      * @param topic
      * @param msgPool 接收函数
      */
-    public void consumer(String topic, ConsumerMsgPool msgPool) {
+    public void consumer(String topic, ConsumerMsgInterface msgPool) {
         List<String> topics = new ArrayList<>();
         topics.add(topic);
         consumer(topics, msgPool);
     }
 
 
-    public void consumer(int threadCount, String topic, ConsumerMsgPool msgPool) {
+    public void consumer(int threadCount, String topic, ConsumerMsgInterface msgPool) {
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         final List<MultiConsumer> consumers = new ArrayList<>();
         for (int i = 0; i < threadCount; i++) {
@@ -125,9 +156,9 @@ public class KafkaConsumer<K, V> {
     public class MultiConsumer implements Runnable {
 
         private String topic;
-        private ConsumerMsgPool msgPool;
+        private ConsumerMsgInterface msgPool;
 
-        public MultiConsumer(String topic, ConsumerMsgPool msgPool) {
+        public MultiConsumer(String topic, ConsumerMsgInterface msgPool) {
             this.topic = topic;
             this.msgPool = msgPool;
         }
