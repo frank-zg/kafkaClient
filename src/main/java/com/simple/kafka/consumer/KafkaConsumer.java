@@ -50,7 +50,7 @@ public class KafkaConsumer<K, V> {
      */
     public KafkaConsumer(Properties props) {
         initProperties();
-        if (props == null) {
+        if (props != null) {
             this.properties = props;
         }
 
