@@ -11,11 +11,11 @@ Dependency:     kafka version: 0.10.0.1, jdk1.8
 
     com.simple.kafka.consumer.KafkaConsumer      消费者
         sample:
-            'new KafkaConsumer<String, String>(props).consumer(3,"test", s -> doSomething(s));'
+            'new KafkaConsumer<String, String>(props).build().consumer(3,"test", s -> doSomething(s));'
 ---    
     com.simple.kafka.producer.KafkaProducer      生产者
         sample:
-            'KafkaProducer<String, String> producer = new KafkaProducer<>(props);'
+            'KafkaProducer<String, String> producer = new KafkaProducer<>(props).build();'
             'while (true) {
                          producer.sendMsg("test", UUID.randomUUID().toString(), (metadata, exception)
                                  -> callBack()
