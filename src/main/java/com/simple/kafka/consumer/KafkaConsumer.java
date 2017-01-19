@@ -97,13 +97,14 @@ public class KafkaConsumer<K, V> {
      * 消费Kafka数据
      *
      * @param topics
-     * @param msgPool 接收函数
+     * @param pollSize 获取数据条数
+     * @param msgPool  接收函数
      */
-    public void consumer(List<String> topics, ConsumerMsgInterface msgPool) {
+    public void consumer(List<String> topics, Long pollSize, ConsumerMsgInterface msgPool) {
         try {
             this.consumer.subscribe(topics);
             while (true) {
-                ConsumerRecords<K, V> records = this.consumer.poll(1000);
+                ConsumerRecords<K, V> records = this.consumer.poll(pollSize);
                 for (ConsumerRecord<K, V> record : records) {
                     msgPool.receiveMsg(record.value().toString());
                 }
@@ -120,12 +121,13 @@ public class KafkaConsumer<K, V> {
      * 消费Kafka数据
      *
      * @param topic
-     * @param msgPool 接收函数
+     * @param pollSize 获取数据条数
+     * @param msgPool  接收函数
      */
-    public void consumer(String topic, ConsumerMsgInterface msgPool) {
+    public void consumer(String topic, Long pollSize, ConsumerMsgInterface msgPool) {
         List<String> topics = new ArrayList<>();
         topics.add(topic);
-        consumer(topics, msgPool);
+        consumer(topics, pollSize, msgPool);
     }
 
 
@@ -166,7 +168,7 @@ public class KafkaConsumer<K, V> {
         @Override
         public void run() {
             try {
-                consumer(topic, msgPool);
+                consumer(topic, 100l, msgPool);
             } catch (Exception e) {
                 logger.error("consumer error:{}", e);
             } finally {
