@@ -1,17 +1,19 @@
 kafkaClient
 ===========
 
-Describe:   kafka simple producer/consumer
+Describe:   kafka simple producer/consumer  
 
-From:     frank.zhao kafka-client
+From:     frank.zhao kafka-client  
 
-Dependency:     kafka version: 0.10.0.1, jdk1.8
+Dependency:     kafka version: 0.10.0.1, jdk1.8  
 
-###Get Start:
+---
+
+### Get Start:  
 
     com.simple.kafka.consumer.KafkaConsumer      消费者
         sample:
-            'new KafkaConsumer<String, String>(props).build().consumer(3,"test", s -> doSomething(s));'
+            'new KafkaConsumer<String, String>(props).build().consumer("test", 3 , s -> doSomething(s));'
 ---    
     com.simple.kafka.producer.KafkaProducer      生产者
         sample:

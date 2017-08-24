@@ -1,8 +1,6 @@
 package com.simple.kafka.producer;
 
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.clients.producer.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +10,6 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by zg on 2016/11/3.
  *
- * @apiNote longsheng KafkaProducer
  * @apiNote kafka-client-0.10.0.1
  */
 public class KafkaProducer<K, V> {
@@ -26,7 +23,7 @@ public class KafkaProducer<K, V> {
      * 初始化默认配置
      */
     private void initProperties() {
-        properties.put("bootstrap.servers", "192.168.0.122:9092");
+        properties.put("bootstrap.servers", "127.0.0.1:9092");
         properties.put("client.id", "testClient");
         properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
@@ -58,6 +55,10 @@ public class KafkaProducer<K, V> {
         }
     }
 
+
+    /**
+     * set default config, update singleton parameter use set***
+     */
     public KafkaProducer() {
         initProperties();
     }
@@ -79,6 +80,17 @@ public class KafkaProducer<K, V> {
      */
     public KafkaProducer setClientId(String clientId) {
         this.properties.put("client.id", clientId);
+        return this;
+    }
+
+    public KafkaProducer setStringSeries() {
+        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        return this;
+    }
+
+    public KafkaProducer setAcks(String acks) {
+        properties.put("acks", acks);
         return this;
     }
 
